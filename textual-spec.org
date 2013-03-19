@@ -1,0 +1,433 @@
+* fussless-data : Message & input language-format (application/fussless-data)
+* establish a baseline (things that most projects need)
+* needs
+** Human readable
+*** No polution
+*** No unecessary characters
+*** just the content
+    the information you want to read, neatly indented where structure exist
+    to show its structure at a glance
+** Human writable
+   no frills, what inspired me is [markdown][], markup should be just characters
+   we use normally and the leas amount of it the better
+
+   I used to write xml directly aeons ago (docbook, etc), and a whole bunch
+   of LaTeX, while I find both powerful and have no difficulties at all
+   doing them on a daily basis: Most people cringe at the idea.
+
+   And since I've discovered markdown I only use LaTeX directly on fringe
+   cases myself.
+
+   I wanted the same effect for data, not only documents.
+** a payload format
+*** used to communicate data
+**** and only that, one single thing.
+** readability and user friendliness trumps being easy to parse
+   but when possible to get both we surely should
+** insta-usefulness
+*** make people a little happier
+**** by making data readable without cringing.
+*** 
+** must get out of the way
+* Major use-cases
+** CSV users
+   Maybe you just wanted the quick data dump and will not bother with
+   semantics for your current need
+
+   Maybe you want to have the data first and discover how you will name the
+   elements incrementally, so you started with a big dump that you will
+   transform o something else.
+
+   Maybe you just received that big CSV file and now you need to parse it
+
+   Maybe it just works for you like that and you don't want no newer formats
+   in your life (shine on you crazy diamond)
+
+   for whatever easons you are using CSV right now:
+
+   well you are also a user of fussless-data already, You can probably just parse it directly as-is[1], go ahead
+
+   this is valid fussless-data:
+
+   "Peter"	"Parker"	"555-5555"	http://spider-man.com	40	1981-10-23T00:00:00Z
+   "Mary-Jane"	"Parker"	"555-5555"	http://mary-jane.org	40	1981-10-23T00:00:00Z
+
+   It parses like your Tabs separated values would, *but* it natively
+   understands and serve you the URL, number and date as your language
+   representation for them. dont do it yourself by hand! You're welcome,
+   have a nice day.
+
+   [1]fussless-data will only require you to have no headers, use whites-pace as
+   separation, have your empty fields directly marked as such (either the
+   empty string "", or the fussless-data's null (\0) whatever you want) and you're
+   all set.
+   You can convert any CSV file easily to respect those 3 requirements
+** Configuration users
+   Not in the boat of [InternalReprogramability][] ?
+   then you should *not* use a programming language as you conf, as it is both expensive to parse and a security risk [LOLSEC][]
+   follow the [princile of least power][]!
+   You need the dumbest language that can still house your configuration
+
+*** Just want to define flat list of things?
+
+   go right ahead
+
+   given-name "Peter"
+   family_name "Parker"
+   Phone "555-5555"
+   webSite http://spider-man.com
+   Age 50
+   birthday 1962-08-15T12:00:00Z
+
+*** Want some groups? maybe groups of groups?
+   Use fussless-data as INI on steroids! like [toml][], but even more minimal, here is toml's official example done in fussless-data
+
+   ; this is a fussless-data document. Boom.
+
+   title "fussless-data Example"
+
+   owner
+     name "Tom Preston-Werner"
+     organization "GitHub"
+     site http://github.com
+     bio "GitHub Cofounder & CEO\nLikes tater tots and beer."
+     dob 1979-05-27T07:32:00Z ; First class dates? Why not?
+
+   database
+     server "192.168.1.1"
+     ports 8001 8001 8002
+     ; you can explicitly inform your tables if you find that prettier
+     blockedPorts [ 80 8080 443 ]
+     connection_max 5000
+     enabled
+
+   servers
+     ; you can use any space or tab (or mix) to ident, fussless-data will be smart about it.
+     alpha
+       ip "10.0.0.1"
+       dc "eqdc10"
+
+     beta
+       ip "10.0.0.2"
+       dc "eqdc10"
+
+   clients.data
+     "gamma" "delta"
+     1 2
+
+   ; not a fan of whitespace-as-structure? fussless-data got you covered! Explicit your arrays with []s and use your whitespace freely
+   hosts [
+     "alpha"
+     "omega"
+   ]
+
+** Protocol users
+   want to pass around data?
+   that data has some structure maybe? a simple hash of hashes(like toml) will just not cut it?
+   Need it to be human readable and sane?
+   Need to minify agressively?
+   Maybe the "true REST way" floats your boat and you need URI as
+   first class citizens? As its creator states
+   [http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven]
+   Want it to be simple, epurated, clear, without loads of special characters polluting your reading experience?
+   Want it to be as dumb as possible to make it as secure as possible? [LOLSEC][]
+
+   Fussless-Data is your best friend here:
+
+*** contrast this example JSON (from their website http://json.org/example.html)
+
+  {"widget": {
+   "debug": "on",
+   "window": {
+       "title": "Sample Konfabulator Widget",
+       "name": "main_window",
+       "width": 500,
+       "height": 500
+   },
+   "image": { 
+       "src": "Images/Sun.png",
+       "name": "sun1",
+       "hOffset": 250,
+       "vOffset": 250,
+       "alignment": "center"
+   },
+   "text": {
+       "data": "Click Here",
+       "size": 36,
+       "style": "bold",
+       "name": "text1",
+       "hOffset": 250,
+       "vOffset": 100,
+       "alignment": "center",
+       "onMouseUp": "sun1.opacity = (sun1.opacity / 100) * 90;"
+   }}}
+
+*** with the same thing in fussless-data
+
+     widget
+       debug
+       	 window
+	   title "Sample Konfabulator Widget"
+	   name "main_window""
+	   width 500
+	   height 500
+     image
+       src "Images/Sun.png"
+       name "sun1"
+       hOffset 250
+       vOffset 250
+       alignment "center"
+     text
+       data "Click Here"
+       size 36
+       style "bold"
+       name "text1"
+       hOffset 250
+       vOffset 100
+       alignment "center"
+       onMouseUp "sun1.opacity = (sun1.opacity / 100) * 90;"
+
+*** lisibility is not your main goal? What you really want is character economy? you Want to see this minified? No problem!
+
+**** the same JSON minified
+
+    {"widget":{"debug":"on","window":{"title":"Sample Konfabulator Widget","name":"main_window","width":500,"height":500},"image":{"src":"Images/Sun.png","name":"sun1","hOffset":250,"vOffset":250,"alignment": "center"},"text": {"data": "Click Here","size": 36,"style": "bold","name": "text1","hOffset": 250,"vOffset": 100,"alignment": "center","onMouseUp":"sun1.opacity = (sun1.opacity / 100) * 90;"}}}
+
+**** the fussless-data version minified:
+
+    widget [debug [window [title "Sample Konfabulator Widget" name "main_window" width 500 height 500]]] image [src "Images/Sun.png" name "sun1" hOffset 250 vOffset 250 alignment "center"] text [data "Click Here" size 36 style "bold" name "text1" hOffset 250 vOffset 100 alignment "center" onMouseUp "sun1.opacity = (sun1.opacity / 100) * 90;"]
+
+    both smaller *and* more readable! Have your cake and eat it too!
+
+    Maybe suddenly you realise that you just really need a binary format for
+    something, what to use? [protobuf][] or[thrift][]? fussless-data export to both,
+    write it once, decide it later when either your data justifies that need
+    or you need to speak to someone that only speaks one of them.
+
+*** Need the information to validate against a schema, so you know you are not receiving or sending gibberish?
+
+   fussless-data by itself is [schemaless][], but [fussless-data-schema][] is there to save your day and make you happy.)
+
+*** don't be obnoxious
+    There are stable and established formats that work and everybody
+    understands (iCal, vcard, atom etc).
+    if you prefer to write everything in fussless-data, create/use converters, respect
+** People wanting to comunicate in less readable formats
+   You just need JSON or xml or toml or yaml?
+   Communications involves at least two, maybe the other(s) don't speak fussless-data at all.
+   Don't want to write in those formats?
+   Maybe even need to have all of them at once and don't want to handle it multiple times?
+
+   Fussless-Data can convert to all of them.
+
+   Want to write to a specific output format
+   maybe something highly standard and know by everyon like atom, vcard, iCal, html etc.
+
+   Use a converter (or create one).
+* wants
+** Schemas and validation (like DTD, xsd, RelaxNG)
+** convertion from our schemas to others
+** convertion from exiting schema formats to ours
+* wants to judge
+* wants eschewed
+** entities as in xml
+*** like &amp; to represent an ampersand character or &gt; for `>'
+*** those used to escape are not needed
+**** we do no escape when putting a fussless-data inside a fussless-data
+**** if we want to put a fussless-data inside a value it will be string
+**** string escapes everything within
+**** things outside string need no escaping
+**** character escaped
+*** references
+**** you cannot create a something then call that something
+*** API
+**** by design fussless-data is as dumb as possible, for complex manipulations your choices are
+***** parse it to your structure of choice in your language of choice and work there.
+***** convert it to JSON or XML and use their existing rich APIs for free
+* Encoding : only UTF-8 is valid
+* Separators
+** White-space
+*** Separates everything
+**** any unicode whitespace character (space, hair, tabs etc)
+***** Except the non breaking space (unicode code?)
+****** we respect the semantic of the non breaking space as not being a separator
+******* we parse it as a letter or an hyphen would
+******** you can create entities with non breaking spaces in it
+********* you can even create an entity composed only of non breaking spaces
+********** good luck understanding your document if you do that
+***** All horizontal white-space is equal
+****** be it a hair a space or a tab
+******* it all idents a single level in the eyes of the parser
+******** so mixing different whitespace characters will probably be confusing
+********* better stick to only one kind of character for identation
+***** Spurious identation levels ignored
+****** if an entity is idented more than the previous it is a child, no matter how much more, if it has the same identing it is a sibling, if it has lass this branch of the tree is over
+       
+**** also newlines (carriage return, line feed etc)
+***** different semantics between horizontal and vertical whitespace
+**** consecutive white-space: ignored.
+**** beginning of message white-space: ignored.
+**** end of message white-space: ignored.
+** Double-quotes the `"' char not the typographic ones
+*** Delimit strings
+*** whitespace inside them remains
+*** whitespace outside it is separator and mandatory
+*** "" an empty string
+*** """ an entity named 3 quotes
+*** """" an entity named 4 quotes)
+*** "" "" two consecutive empty strings
+*** P"this is not a string" an entity whose name is the caracther P and a phrase in quotation.
+*** "\"" a string containing only the quote character
+*** "\n" a string containing only a newline char
+*** \0 null
+*** "\t" a string containing only tabulation char
+*** "\\" a string containing only a backslash
+*** "\\"" a string containing a backslash followed by a quote character
+*** a backslash followed by any other character is a parse error
+** []s are sublist delimiters, whitespace around it: ignored
+*** p["this is a string"] -> entity p with a list of only a single string associated to it
+** dots
+*** a single dot, all by itself, is an entity named '.'
+*** dots inside an entity name are shortcuts to imply an entity hierarchy
+     a.B.C "gamma" -> a [B [C "gamma"]]
+     a [B [C.D "gamma"] [C.D "etta"]] -> a [B [C [D "gamma"]] [C [D "etta"]]]
+*** entities starting with a dot are metadata (not unlike attributes on xml)
+**** they are automatically considered children of the last non-metadata entity behind them
+     no need for explicit []s
+**** dots inside their name are just part of the name
+     A .B.C "test" -> A [.B.C "test"]
+**** meant only as metadata - data about data - for communicating something about an entity that is not part of the entity
+     book
+       .visibility "public"
+       title "1984"
+       author "George Orwell"
+       published-date 1949-01-01T00:00:00Z
+**** metadata cannot have children entities, idented entities after metadata are children of the last non-metadata entity and so are explicit []s
+** semicolon ';', everything between a semicolon and the following newline is a comment, like INI files.
+* parser automata (can I make it regular? or just context free? the existence of sublist seems to imply a stack)
+
+ Every VALUE until the first ENTITY: returned as such, as member of a list.
+
+ Every VALUE after an ENTITY and until the next ENTITY on the same list: member of a sublist associated with that ENTITY.
+
+ Every ENTITY given no value (followed by another entity or end of message): set to boolean true
+ 
+ an [ starts another list parsed as such that is a single child element
+ inside the current list (maybe associated with an ENTITY)
+
+ partial reading imply that as far as the parser knows all
+ '['s close together at the current end of message so in that sense
+ closing the list is "optional"
+ 
+ a ']' ends the current list explicitly
+ if the current list is the topmost one the ']' ends it, the parser does not
+ read the rest of the message, so
+ A "B" C] D "E" -> [A["B"] C[true]]
+* Types
+** String /"[^"]*"/
+   fussless-data is text-only, has no support for binary, but there is nothing
+   stopping you from using base64 encoded binaries inside strings if you
+   want to.
+** URI are first class citizens, so we can fully do REST, you get your language's representation of an URI, if the language has none, you get a string.
+** Regexps (/[^/]*/ or mC[^C]*C if you have slashes inside your regexp
+     	     , no escaping! chose a delimiter not inside your regexp), this
+     	     will give you a regexp as supported by your language (compiled
+     	     regexp if possible), if the language lacks any support for regexps, you get a string.
+** DateTime (ISO8601 subset) You get your language's representation of time, if it has none: you get a string
+** number /-*\d+[\.]{0,1}\d/
+** boolean true false
+** Everything not informed is null
+    (and is the only way to say something is null)
+*** collorary: missing children are valid
+      unless the schema says otherwise
+**** collorary : an empty message is always valid
+     unless the schema says otherwise
+*** [] delimit a list
+*** Everything of unkown type is an entity (the full UTF-8 spectrum of it)
+**** be it meaningful names: is-Responsible_forMankindDoom
+**** or symbols: #,&0
+**** or even a full-on humongous binary dump spanning multiple terabytes.
+**** if the parser cannot type it, it is an entity.
+***** the author ignores if it is possible to create invalid fussless-data.
+****** random gibberish, even binary ones, should just create a series of nonsensical entities with some accidental contents sometimes.
+* end of file and beggining of file white-space ignored
+* parse to a list, can partially/lazily parse
+* lists in []'s
+* all encopassing []'s implied
+* Ignores whitespace
+* Everything that is invalid springs an error, the parser stops on first error
+* add URI support
+* need a way to make a Schema
+** in fussless-data itself
+* gherkin files as specs
+* a file dont know its type (duck validation)
+* exporters
+** to protobuf (the compilable text format)
+** to thrift (the compilable text format)
+** to xml
+** specs to DTD/XSD/RelaxNG
+* to JSON
+* specs to JSON braindead spec format
+* to yaml
+   * Human readable
+   * implementation reference using grammars, documented, working on gigabytes (no slurping), no referencing (we can parse without goig back) sintaxically checked
+     * in Emacs lisp
+     * in C (Bison lex yacc over clang) (imperative example, higher languages with C bindings can use it)
+     * in Javascript (or no adoption at all)
+     * in Java
+     * in Scala
+     * in Clojure
+     * in Java
+     * in Python
+     * in Ruby
+     * in Erlang
+     * in Perl
+     * in PHP
+   * Emacs-mode
+   * no file required/supposed no extension required if file, .fussless-data
+     recommended when schemaless, something specifi to your schema may be
+     better if you have one.
+   * validator
+     * entire-document-version
+     * lazy version?
+   * apply to mime?
+   * fussless-data-schema
+   * fussless-data-meta-schema
+   * intended as payload only
+     * no reference/pointers like xpath
+     * no API like DOM and SAX
+     * schema exist because even using as payload only sometimes going
+       schemaless is not enough
+
+     * the intended purpose is to gather the data and get out of the way you
+       can always do more advanced work on the caller or convert to more
+       complex formats
+   * TODO: clojurify it a little so it becomes nearer to Clojure vectors 
+* TODO I should make an I-D for an RFC for this when it is all stable.
+* TODO I should apply for a standard MIME type (IETF or IANA ?)
+* TODO compare to toml
+* TODO compare to edn
+* TODO compare to yaml
+* TODO compare to json
+* TODO compare to xml
+* Isnt this just S-expressions?
+  Ok history time, in all honesty this was not my original intent. I
+  discovered [toml][] on 2013-02-25 ('twas [@michaelneale][] fault). And it
+  just tickled my fancy: it made me realize I wanted something more minimal
+  and dumber than JSON.
+
+  So I forked it, and started poking around, my initial ambition was just to
+  contribute to it a little, I wanted to make a full [gherkin][] test suit
+  for it, clean up what I perceived as not being minimal, add what features
+  I had found lacking. etc.
+
+  And while doing that, change after change, I just realized that at some
+  point I've got bitten by the data-language version of [greenspun's 10th
+  law][] : in the hopes of creating the data-language of the future that I
+  desired I had just recreated a slice of what McCarthy did in 1960.
+
+  By trying to make "A more powerful and leaner INI file" I ended up with
+  "What S-expressions would look if made by someone that really hates
+  parenthesis and really digs white-space".
+
+  SO I decided to embrace that, searched around a little 
