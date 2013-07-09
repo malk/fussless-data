@@ -431,6 +431,100 @@
   parenthesis and really digs white-space".
 
   SO I decided to embrace that, searched around a little 
+
+
+* TODO to see
+** http://srfi.schemers.org/srfi-49/srfi-49.html
+** http://readable.sourceforge.net/
+* TODO types of lang
+** regular
+*** what data can I represent in a language entirely processable by a Finite Deterministic Automata?
+**** so we can process it using only a lexer
+**** which means a regular language can process
+***** a non-backtracking one at that
+** pretty-regular
+*** non minified regular
+**** we may have comments
+**** we may have 
+*** define a standard way to convert from minified to a version of this
+*** define a standard way to convert from this to minified
+*** can I do both conversions using only a Finite Deterministic automata?
+** contextless
+*** Can I go full sexp by only adding parens to the regular lang?
+*** can I do it on a simple LL(1) that calls the regular lexer for everything that is not paren?
+**** efectively being a smal superset?
+** pretty-contextless
+*** like pretty-regular but to the contextless dialect
+** edn
+*** can I describe edn as being a strict small superset of contextless?
+*** edn is always "pretty"
+* TODO RoadMap to stable release
+  Necessary steps, in order
+** TODO Write tech doc explaining the format in a terse manner to computer scientists
+** TODO Write spec in Gherkin
+** TODO Full description of the Finite Deterministic Automate capable of processing this, drawn and written
+** TODO Write vulgarisation doc explaining the format to anyone interested
+** TODO Write the functional implementations
+   Starting out implementing the spec on some functional languages, to have a solid base of code to test it that can be easily evolved, tested and reasoned.
+*** TODO Write clojure implementation
+    We need one implementation in a functional and dynamic language, any Lisp should do, clojure is just my current flavour of choice as Lisps go.
+*** TODO write the elisp implementation
+    I want emacs to read this natively, I shall use this a LOT while testing.
+*** TODO Write oCaml implementation
+    ML rich type system may show some subtle traps, this may impact the spec, oCaml is just my choice of ML
+*** TODO Write Haskell implementation
+    For the same reason as ML, only complementary to it
+** TODO Write the JS implementation
+   until this works on JS nobody will consider it. as every platform ends up
+   using JS in the end somewhere when it does webapps Also JS has a very
+   Dynamic and Very Weak Type system, this may arise compromises to take in
+   the spec.
+*** should be blazingly fast, bench that
+*** Compatible with ASM.js
+*** pure JS with no dependencies
+*** Compatible with Node.js
+**** Installeable by npm
+*** Calleable by require.js/amd etc
+*** Compatible with Chrome
+*** compatible with Firefox
+*** Compatible with IE
+** TODO Write THE C implementation
+   0. this will be the only imperative implementation
+   1. C is a lingua franca (languages with C bindings abound)
+   2. is the most widely used and living imperative language
+   3. With Coq we shall have the first implementation with formal proof of
+      our reference implementation
+   4. with clang we shall have LLVM as one of our backends
+   5. this should pass every check possible on splint
+   6. this should pass every check possible with GCC and clang.
+   7. this should eschew lex&Yacc and explin why on the doc
+** TODO Write the OO iplementations
+   This project will not be taken seriously until we have those
+*** TODO Write the Ruby imlementation
+    Verily OO, popular
+*** TODO write the java implementation
+    1. there is no way around this, Java is one of the most used languages ever
+    2. should be done on Java 1.5, then tested on JRE 1.6/1.7
+    3. test with checkstyle
+    4. test with findbugs
+    5. test with pmd
+    6. mavenize
+    7. base lib with no dependencies
+*** TODO write the Python implementation
+    popular, I would not do Ruby and not Python, should work with PyPy
+*** TODO write the PHP implementation
+    PHP is widely used, has a very weak and very dynamic typing system, that can maybe expose issues with the spec
+** TODO Go down the rabbit hole
+*** if this is truly regular we should be able to process it using only grep+sed (with a pure #bin/sh script that only calls grep or sed)
+** the last steps : RFC
+   when everythig else done, release as 1.0RC and
+*** TODO Write RFC
+*** TODO Submit to rfc staff
+*** TODO Get comments from RFC staff
+**** changes?
+*** TODO Get approval or refusal from RFC staff
+**** Refusal with a chance of approval later on some changes may be the beginning of a new dev cycle
+**** Complete Refusal or approval are both a mark of version 1.0 stable.
 * CopyRight
 Copyright 2013 Romeu “Malk’Zameth” MOURA
 This file is part of fussless-data. fussless-data is free software: you can
@@ -442,5 +536,4 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with fussless-data. If not, see <http://www.gnu.org/licenses/>.
-
-
+   
